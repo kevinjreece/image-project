@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "outDir": "target",
+        "module": "commonjs",
+        "strict": true,
+        "typeRoots": [
+            "./node_modules/@types"
+        ],
+        "target": "es2015",
+        "lib": [
+            "dom",
+            "es2015",
+        ],
+    },
+    "files": [
+        "src/main.ts",
+    ]
+}
