@@ -1,9 +1,25 @@
+class Pixel {
+    constructor(
+        public readonly r: number,
+        public readonly g: number,
+        public readonly b: number,
+    ) {}
+
+    public toString(): string {
+        return `${this.r} ${this.g} ${this.b}`;
+    }
+
+    static fromArray(rgb: [number, number, number]): Pixel {
+        return new Pixel(rgb[0], rgb[1], rgb[2]);
+    }
+}
+
 export class PPM {
     public type: string;
     public width: number;
     public height: number;
     public maxNum: number;
-    public pixels: [number, number, number][];
+    public pixels: Pixel[];
 
     constructor(raw: string) {
         const lines = raw.split(/\r?\n/);
@@ -22,7 +38,7 @@ export class PPM {
         this.pixels = [];
 
         for (let i = 4; i < symbols.length; i += 3) {
-            this.pixels.push(symbols.slice(i, i + 3).map(a => +a) as [number, number, number]);
+            this.pixels.push(Pixel.fromArray(symbols.slice(i, i + 3).map(a => +a) as [number, number, number]));
         }
     }
 
@@ -30,7 +46,7 @@ export class PPM {
         return this.type + '\n' +
             this.width + ' ' + this.height + '\n' +
             this.maxNum + '\n' +
-            this.pixels.map(p => p.join(' ')).join(' ');
+            this.pixels.map(p => p.toString()).join(' ');
     }
 
     public duplicate(): PPM {
