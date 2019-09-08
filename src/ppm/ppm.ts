@@ -32,4 +32,8 @@ export class PPM {
             this.maxNum + '\n' +
             this.pixels.map(p => p.join(' ')).join(' ');
     }
+
+    public duplicate(): PPM {
+        return new PPM(this.toString());
+    }
 }

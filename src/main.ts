@@ -26,7 +26,7 @@ var data: {[id: string]: string} = {};
 readFiles('inputs/', '.ppm', function (filename, content) {
     data[filename] = content;
     if (filename.includes('1%')) {
-        const ppm = new PPM(content)
+        const ppm = new PPM(content);
         fs.writeFile('outputs/' + filename, ppm.toString(), (err: NodeJS.ErrnoException | null) => {
             console.error(err);
         });
