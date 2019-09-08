@@ -4,12 +4,14 @@
   "description": "simplifies images as if traced digitally",
   "main": "src/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jasmine JASMINE_CONFIG_PATH=jasmine.json"
   },
   "author": "Kevin J. Reece",
   "license": "ISC",
   "devDependencies": {
     "@types/filesystem": "0.0.29",
-    "@types/node": "^12.7.4"
+    "@types/jasmine": "^3.4.0",
+    "@types/node": "^12.7.4",
+    "jasmine": "^3.4.0"
   }
 }

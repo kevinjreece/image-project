@@ -3,3 +3,6 @@ build:
 
 run: build
 	node target/main.js
+
+test: build
+	npm test
