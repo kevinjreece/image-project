@@ -9,6 +9,12 @@ class Pixel {
         return `${this.r} ${this.g} ${this.b}`;
     }
 
+    public equals(other: Pixel): boolean {
+        return this.r === other.r &&
+            this.g === other.g &&
+            this.b === other.b;
+    }
+
     static fromArray(rgb: [number, number, number]): Pixel {
         return new Pixel(rgb[0], rgb[1], rgb[2]);
     }
@@ -23,13 +29,13 @@ export class PPM {
 
     constructor(raw: string) {
         const lines = raw.split(/\r?\n/);
-        const filteredLines = lines.filter(line => !line.startsWith('#'));
+        const filteredLines = lines.filter(line => !line.trim().startsWith('#')).filter(line => !!line);
         const symbols = ([] as string[]).concat(...filteredLines.map(line => line.match(/\S+/g)!));
 
         if (symbols.length < 7 || (symbols.length - 4) % 3 != 0) {
-            // throw new Error('incorrectly formatted PPM content');
-            console.log('error in format: ');
-            console.log('number of symbols: ', symbols.length);
+            console.error('ERROR IN FORMAT');
+            console.error('*** number of symbols: ', symbols.length);
+            throw new Error('incorrectly formatted PPM content');
         }
         this.type = symbols[0];
         this.width = +symbols[1];
@@ -40,6 +46,12 @@ export class PPM {
         for (let i = 4; i < symbols.length; i += 3) {
             this.pixels.push(Pixel.fromArray(symbols.slice(i, i + 3).map(a => +a) as [number, number, number]));
         }
+    }
+
+    public forEachPixel(func: (p: Pixel, x: number, y: number) => void): void {
+        this.pixels.forEach((p, i) => {
+            func(p, i % this.width, Math.floor(i / this.height));
+        });
     }
 
     public toString(): string {
