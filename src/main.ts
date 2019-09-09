@@ -28,7 +28,7 @@ readFiles('inputs/', '.ppm', function (filename, content) {
     const ppm = new PPM(content);
 
     const greyscale = greyscaleImage(ppm);
-    fs.writeFile('outputs/simple_' + filename, greyscale.toString(), (err: NodeJS.ErrnoException | null) => {
+    fs.writeFile('outputs/greyscale_' + filename, greyscale.toString(), (err: NodeJS.ErrnoException | null) => {
         if (!!err) {
             console.error('error writing to file: ', err);
         }
@@ -40,19 +40,28 @@ readFiles('inputs/', '.ppm', function (filename, content) {
             console.error('error writing to file: ', err);
         }
     });
+
+    const simplified = simplifyImage(ppm);
+    fs.writeFile('outputs/simplified_' + filename, simplified.toString(), (err: NodeJS.ErrnoException | null) => {
+        if (!!err) {
+            console.error('error writing to file: ', err);
+        }
+    });
 }, function (err) {
     throw err;
 });
 
 function invertImage(original: PPM): PPM {
     const inverted = original.duplicate();
+
     original.forEachPixel((p, x, y, i) => {
         inverted.pixels[i] = p.invert();
     });
+
     return inverted;
 }
 
-function greyscaleImage(original: PPM, spread: number = 5, limit: number = 50): PPM {
+function greyscaleImage(original: PPM): PPM {
     const newImage = original.duplicate();
 
     original.forEachPixel((p, x, y, i) => {
@@ -63,5 +72,18 @@ function greyscaleImage(original: PPM, spread: number = 5, limit: number = 50): 
     return newImage;
 }
 
-// function simplifyImage(original: PPM, spread: number = 5, limit: number = 50): PPM {
-// }
+function simplifyImage(original: PPM, spread: number = 5, limit: number = 50): PPM {
+    const newImage = original.duplicate();
+    const w = original.width;
+    const h = original.height;
+
+    original.forEachPixel((p, x, y, i) => {
+        if (x < spread || x > w - spread || y < spread || y > h - spread) {
+            newImage.pixels[i] = Pixel.black();
+        } else {
+            newImage.pixels[i] = Pixel.white();
+        }
+    });
+
+    return newImage;
+}

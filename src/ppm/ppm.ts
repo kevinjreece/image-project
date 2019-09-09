@@ -22,6 +22,14 @@ export class Pixel {
     static fromArray(rgb: [number, number, number]): Pixel {
         return new Pixel(rgb[0], rgb[1], rgb[2]);
     }
+
+    static black(): Pixel {
+        return new Pixel(0, 0, 0);
+    }
+
+    static white(): Pixel {
+        return new Pixel(255, 255, 255);
+    }
 }
 
 export class PPM {
