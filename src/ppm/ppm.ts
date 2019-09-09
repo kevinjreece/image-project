@@ -5,6 +5,10 @@ class Pixel {
         public readonly b: number,
     ) {}
 
+    public invert(): Pixel {
+        return new Pixel(255 - this.r, 255 - this.g, 255 - this.b);
+    }
+
     public toString(): string {
         return `${this.r} ${this.g} ${this.b}`;
     }
@@ -30,7 +34,10 @@ export class PPM {
     constructor(raw: string) {
         const lines = raw.split(/\r?\n/);
         const filteredLines = lines.filter(line => !line.trim().startsWith('#')).filter(line => !!line);
-        const symbols = ([] as string[]).concat(...filteredLines.map(line => line.match(/\S+/g)!));
+        const symbols: string[] = [];
+        filteredLines.forEach(line => {
+            line.match(/\S+/g)!.forEach(str => symbols.push(str));
+        });
 
         if (symbols.length < 7 || (symbols.length - 4) % 3 != 0) {
             console.error('ERROR IN FORMAT');
@@ -48,9 +55,9 @@ export class PPM {
         }
     }
 
-    public forEachPixel(func: (p: Pixel, x: number, y: number) => void): void {
+    public forEachPixel(func: (p: Pixel, x: number, y: number, i: number) => void): void {
         this.pixels.forEach((p, i) => {
-            func(p, i % this.width, Math.floor(i / this.height));
+            func(p, i % this.width, Math.floor(i / this.height), i);
         });
     }
 
@@ -58,7 +65,7 @@ export class PPM {
         return this.type + '\n' +
             this.width + ' ' + this.height + '\n' +
             this.maxNum + '\n' +
-            this.pixels.map(p => p.toString()).join(' ');
+            this.pixels.map(p => p.toString()).join(' ') + '\n';
     }
 
     public duplicate(): PPM {

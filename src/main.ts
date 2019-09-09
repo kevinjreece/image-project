@@ -27,10 +27,29 @@ readFiles('inputs/', '.ppm', function (filename, content) {
     data[filename] = content;
     if (filename.includes('1%')) {
         const ppm = new PPM(content);
-        fs.writeFile('outputs/' + filename, ppm.toString(), (err: NodeJS.ErrnoException | null) => {
-            console.error(err);
+        const inverted = invertImage(ppm);
+        fs.writeFile('outputs/inverted_' + filename, inverted.toString(), (err: NodeJS.ErrnoException | null) => {
+            if (!!err) {
+                console.error('error writing to file: ', err);
+            }
         });
     }
 }, function (err) {
     throw err;
 });
+
+function invertImage(original: PPM): PPM {
+    const inverted = original.duplicate();
+    original.forEachPixel((p, x, y, i) => {
+        inverted.pixels[i] = p.invert();
+    });
+    return inverted;
+}
+
+function simplifyImage(original: PPM, spread: number = 5, limit: number = 50): PPM {
+    const newImage = original.duplicate();
+
+
+
+    return newImage;
+}

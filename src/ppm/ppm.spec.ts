@@ -1,6 +1,6 @@
 import { PPM } from "./ppm";
 
-const simplePPM = 'p3\n1 1\n256\n0 0 0 1 1 1';
+const simplePPM = 'p3\n1 1\n256\n0 0 0 1 1 1\n';
 
 describe('PPM', () => {
     it('can be constructed from a raw ppm string', () => {
@@ -19,10 +19,13 @@ describe('PPM', () => {
         const w = ppm.width;
         let targetX = 0;
         let targetY = 0;
-        ppm.forEachPixel((p, x, y) => {
+        let targetI = 0;
+        ppm.forEachPixel((p, x, y, i) => {
             expect(p).toBe(ppm.pixels[y * w + x], 'iterating over pixels in the wrong order');
             expect(x).toBe(targetX, 'x calculation is wrong');
             expect(y).toBe(targetY, 'y calculation is wrong');
+            expect(i).toBe(targetI, 'i calculation is wrong');
+            targetI++;
             if (++targetX === w) {
                 targetX = 0;
                 targetY++;
