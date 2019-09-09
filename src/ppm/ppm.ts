@@ -1,4 +1,4 @@
-class Pixel {
+export class Pixel {
     constructor(
         public readonly r: number,
         public readonly g: number,
