@@ -25,15 +25,21 @@ function readFiles(dirname: string, fileType: string, onFileContent: (filename: 
 var data: {[id: string]: string} = {};
 readFiles('inputs/', '.ppm', function (filename, content) {
     data[filename] = content;
-    if (true || filename.includes('small')) {
-        const ppm = new PPM(content);
-        const simplified = simplifyImage(ppm);
-        fs.writeFile('outputs/simple_' + filename, simplified.toString(), (err: NodeJS.ErrnoException | null) => {
-            if (!!err) {
-                console.error('error writing to file: ', err);
-            }
-        });
-    }
+    const ppm = new PPM(content);
+
+    const greyscale = greyscaleImage(ppm);
+    fs.writeFile('outputs/simple_' + filename, greyscale.toString(), (err: NodeJS.ErrnoException | null) => {
+        if (!!err) {
+            console.error('error writing to file: ', err);
+        }
+    });
+
+    const inverted = invertImage(ppm);
+    fs.writeFile('outputs/inverted_' + filename, inverted.toString(), (err: NodeJS.ErrnoException | null) => {
+        if (!!err) {
+            console.error('error writing to file: ', err);
+        }
+    });
 }, function (err) {
     throw err;
 });
@@ -46,7 +52,7 @@ function invertImage(original: PPM): PPM {
     return inverted;
 }
 
-function simplifyImage(original: PPM, spread: number = 5, limit: number = 50): PPM {
+function greyscaleImage(original: PPM, spread: number = 5, limit: number = 50): PPM {
     const newImage = original.duplicate();
 
     original.forEachPixel((p, x, y, i) => {
@@ -56,3 +62,6 @@ function simplifyImage(original: PPM, spread: number = 5, limit: number = 50): P
 
     return newImage;
 }
+
+// function simplifyImage(original: PPM, spread: number = 5, limit: number = 50): PPM {
+// }
