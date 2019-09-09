@@ -27,20 +27,6 @@ readFiles('inputs/', '.ppm', function (filename, content) {
     data[filename] = content;
     const ppm = new PPM(content);
 
-    const greyscale = greyscaleImage(ppm);
-    fs.writeFile('outputs/greyscale_' + filename, greyscale.toString(), (err: NodeJS.ErrnoException | null) => {
-        if (!!err) {
-            console.error('error writing to file: ', err);
-        }
-    });
-
-    const inverted = invertImage(ppm);
-    fs.writeFile('outputs/inverted_' + filename, inverted.toString(), (err: NodeJS.ErrnoException | null) => {
-        if (!!err) {
-            console.error('error writing to file: ', err);
-        }
-    });
-
     const simplified = simplifyImage(ppm);
     fs.writeFile('outputs/simplified_' + filename, simplified.toString(), (err: NodeJS.ErrnoException | null) => {
         if (!!err) {
@@ -72,16 +58,25 @@ function greyscaleImage(original: PPM): PPM {
     return newImage;
 }
 
-function simplifyImage(original: PPM, spread: number = 5, limit: number = 50): PPM {
+function simplifyImage(original: PPM, spread: number = 1, limit: number = 50): PPM {
     const newImage = original.duplicate();
     const w = original.width;
     const h = original.height;
 
     original.forEachPixel((p, x, y, i) => {
-        if (x < spread || x > w - spread || y < spread || y > h - spread) {
+        if (x < spread || x >= w - spread || y < spread || y >= h - spread) {
             newImage.pixels[i] = Pixel.black();
         } else {
-            newImage.pixels[i] = Pixel.white();
+            const ul = original.getPixelByCoord(x - spread, y - spread);
+            const ur = original.getPixelByCoord(x + spread, y - spread);
+            const dl = original.getPixelByCoord(x - spread, y + spread);
+            const dr = original.getPixelByCoord(x + spread, y + spread);
+
+            if (ul.diff(dr) > limit || ur.diff(dl) > limit) {
+                newImage.pixels[i] = Pixel.black();
+            } else {
+                newImage.pixels[i] = Pixel.white();
+            }
         }
     });
 

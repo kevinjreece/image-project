@@ -9,6 +9,12 @@ export class Pixel {
         return new Pixel(255 - this.r, 255 - this.g, 255 - this.b);
     }
 
+    public diff(other: Pixel): number {
+        return Math.abs(this.r - other.r) +
+            Math.abs(this.g - other.g) +
+            Math.abs(this.b - other.b);
+    }
+
     public toString(): string {
         return `${this.r} ${this.g} ${this.b}`;
     }
@@ -18,6 +24,10 @@ export class Pixel {
             this.g === other.g &&
             this.b === other.b;
     }
+
+    /*
+        STATIC FUNCTIONS
+    */
 
     static fromArray(rgb: [number, number, number]): Pixel {
         return new Pixel(rgb[0], rgb[1], rgb[2]);
@@ -61,6 +71,14 @@ export class PPM {
         for (let i = 4; i < symbols.length; i += 3) {
             this.pixels.push(Pixel.fromArray(symbols.slice(i, i + 3).map(a => +a) as [number, number, number]));
         }
+    }
+
+    public getPixelByCoord(x: number, y: number): Pixel {
+        const p = this.pixels[y * this.width + x];
+        if (!p) {
+            console.error('error getting pixel for x,y:', x, y);
+        }
+        return p;
     }
 
     public forEachPixel(func: (p: Pixel, x: number, y: number, i: number) => void): void {
