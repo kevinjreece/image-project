@@ -14,7 +14,7 @@ describe('PPM', () => {
         expect(ppm.toString()).toBe(other.toString());
     });
 
-    it('can foreach over every pixel', () => {
+    it('can foreach over every pixel in a square image', () => {
         const ppm = new PPM(realPPM);
         const w = ppm.width;
         let targetX = 0;
@@ -32,7 +32,35 @@ describe('PPM', () => {
             }
         });
     });
+
+    it('can foreach over every pixel in a rectangle image', () => {
+        const ppm = new PPM(rectanglePPM);
+        const w = ppm.width;
+        let targetX = 0;
+        let targetY = 0;
+        let targetI = 0;
+        ppm.forEachPixel((p, x, y, i) => {
+            expect(p).toBe(ppm.pixels[y * w + x], 'iterating over pixels in the wrong order');
+            expect(x).toBe(targetX, 'x calculation is wrong');
+            expect(y).toBe(targetY, 'y calculation is wrong');
+            expect(i).toBe(targetI, 'i calculation is wrong');
+            targetI++;
+            if (++targetX === w) {
+                targetX = 0;
+                targetY++;
+            }
+        });
+    });
 });
+
+const rectanglePPM = `
+    P3
+    4 3
+    255
+    1 2 3 4 5 6 7 8 9 10 11 12
+    13 14 15 16 17 18 29 20 21 22 23 24
+    25 26 27 28 29 30 31 32 33 34 35 36
+`;
 
 const realPPM = `
     P3

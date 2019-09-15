@@ -58,14 +58,14 @@ function greyscaleImage(original: PPM): PPM {
     return newImage;
 }
 
-function simplifyImage(original: PPM, spread: number = 1, limit: number = 50): PPM {
-    const newImage = original.duplicate();
+function simplifyImage(original: PPM, spread: number = 1, limit: number = 100): PPM {
+    const tracedImage = original.duplicate();
     const w = original.width;
     const h = original.height;
 
     original.forEachPixel((p, x, y, i) => {
         if (x < spread || x >= w - spread || y < spread || y >= h - spread) {
-            newImage.pixels[i] = Pixel.black();
+            tracedImage.pixels[i] = Pixel.black();
         } else {
             const u = original.getPixelByCoord(x, y - spread);
             const d = original.getPixelByCoord(x, y + spread);
@@ -77,12 +77,27 @@ function simplifyImage(original: PPM, spread: number = 1, limit: number = 50): P
             const dr = original.getPixelByCoord(x + spread, y + spread);
 
             if (u.diff(d) > limit || l.diff(r) > limit || ul.diff(dr) > limit || ur.diff(dl) > limit) {
-                newImage.pixels[i] = Pixel.black();
+                tracedImage.pixels[i] = Pixel.black();
             } else {
-                newImage.pixels[i] = Pixel.white();
+                tracedImage.pixels[i] = Pixel.white();
             }
         }
     });
 
-    return newImage;
+    const coloredImage = tracedImage.duplicate();
+
+    coloredImage.forEachPixel((p, x, y, i) => {
+        if (!p.equals(Pixel.white())) {
+            return;
+        }
+        console.log('coloring pixel: ', x, ', ', y);
+        const section = coloredImage.getPixelsInSection(x, y);
+        section.forEach(([pX, pY]: [number, number]) => {
+            let pixel = original.getPixelByCoord(x, y);
+            pixel = pixel.equals(Pixel.white()) ? new Pixel(1, 1, 1) : pixel;
+            coloredImage.setPixelByCoord(pX, pY, pixel.duplicate());
+        });
+    });
+
+    return coloredImage;
 }
