@@ -95,7 +95,7 @@ export class PPM {
         this.pixels[y * this.width + x].set(p.r, p.g, p.b);
     }
 
-    public getPixelsInSection(startX: number, startY: number): [number, number][] {
+    public getPixelsInSection(startX: number, startY: number, targetColor: Pixel = Pixel.white()): [number, number][] {
         const id = (x: number, y: number) => `${x},${y}`;
         const frontier: [number, number][] = [[startX,startY]];
         const frontierSet: Set<string> = new Set([id(startX, startY)]);
@@ -114,7 +114,7 @@ export class PPM {
 
                 const evalPixel = (newX: number, newY: number) => {
                     const pixel = this.getPixelByCoord(newX, newY);
-                    if (!section.has(id(newX, newY)) && pixel.equals(Pixel.white()) && !frontierSet.has(id(newX, newY))) {
+                    if (!section.has(id(newX, newY)) && pixel.equals(targetColor) && !frontierSet.has(id(newX, newY))) {
                         frontier.push([newX, newY]);
                     }
                 };

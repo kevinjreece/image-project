@@ -1,4 +1,4 @@
-import { PPM } from "./ppm";
+import { PPM, Pixel } from "./ppm";
 
 const simplePPM = 'p3\n1 1\n256\n0 0 0 1 1 1\n';
 
@@ -51,7 +51,35 @@ describe('PPM', () => {
             }
         });
     });
+
+    it('can find all pixels in section', () => {
+        const ppm = new PPM(checkeredPPM);
+        const actualTopLeft = ppm.getPixelsInSection(0, 0, Pixel.black());
+        const expectedTopLeft: [number, number][] = [[0, 0], [1, 0], [0, 1], [1, 1]];
+        checkSection(expectedTopLeft, actualTopLeft);
+        const actualTopRight = ppm.getPixelsInSection(2, 0, Pixel.white());
+        const expectedTopRight: [number, number][] = [[2, 0], [3, 0], [2, 1], [3, 1]];
+        checkSection(expectedTopRight, actualTopRight);
+        const actualBottomLeft = ppm.getPixelsInSection(0, 2, Pixel.black());
+        const expectedBottomLeft: [number, number][] = [[0, 2], [1, 2], [0, 3], [1, 3]];
+        checkSection(expectedBottomLeft, actualBottomLeft);
+        const actualBottomRight = ppm.getPixelsInSection(2, 2, Pixel.white());
+        const expectedBottomRight: [number, number][] = [[2, 2], [3, 2], [2, 3], [3, 3]];
+        checkSection(expectedBottomRight, actualBottomRight);
+    });
 });
+
+function checkSection(expected: [number, number][], actual: [number, number][]) {
+    expected.forEach(([expectedX, expectedY]) => {
+        let found = false;
+        for (let [x, y] of actual) {
+            if (x == expectedX && y == expectedY) {
+                found = true;
+            }
+        }
+        expect(found).toBe(true, `(${expectedX}, ${expectedY}) not found in section with (${expected[0][0]}, ${expected[0][1]})`);
+    });
+}
 
 const rectanglePPM = `
     P3
@@ -60,6 +88,16 @@ const rectanglePPM = `
     1 2 3 4 5 6 7 8 9 10 11 12
     13 14 15 16 17 18 29 20 21 22 23 24
     25 26 27 28 29 30 31 32 33 34 35 36
+`;
+
+const checkeredPPM = `
+    P3
+    4 4
+    255
+    255 255 255 255 255 255 0 0 0 0 0 0
+    255 255 255 255 255 255 0 0 0 0 0 0
+    0 0 0 0 0 0 255 255 255 255 255 255
+    0 0 0 0 0 0 255 255 255 255 255 255
 `;
 
 const realPPM = `
@@ -84,3 +122,10 @@ const realPPM = `
     44 44 41 79 73 77 97 88 94 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
     0 0 0 0 0 0 79 70 77 95 90 94 0 0 0 0 0 0 0 0 0 
 `;
+
+`
+xxoo
+xxoo
+ooxx
+ooxx
+`
