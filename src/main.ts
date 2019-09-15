@@ -98,12 +98,31 @@ function simplifyImage(original: PPM, spread: number = 1, limit: number = 50): P
         }
         // console.log('coloring pixel: ', x, ', ', y);
         const section = coloredImage.getPixelsInSection(x, y);
+        const pixels = section.map(([sectionX, sectionY]) => original.getPixelByCoord(sectionX, sectionY));
+        const sectionColor = averageColorOfPixels(pixels);
         section.forEach(([pX, pY]: [number, number]) => {
-            const originalPixel = original.getPixelByCoord(x, y);
-            const coloredPixel = originalPixel.equals(Pixel.white()) ? new Pixel(254, 254, 254) : originalPixel;
-            coloredImage.setPixelByCoord(pX, pY, coloredPixel.duplicate());
+            coloredImage.setPixelByCoord(pX, pY, sectionColor == Pixel.white() ? new Pixel(254, 254, 254) : sectionColor);
         });
     });
 
     return coloredImage;
+}
+
+function averageColorOfPixels(pixels: Pixel[]): Pixel {
+    let rSum = 0;
+    let gSum = 0;
+    let bSum = 0;
+    const numPixels = pixels.length;
+
+    pixels.forEach(p => {
+        rSum += p.r * p.r;
+        gSum += p.g * p.g;
+        bSum += p.b * p.b;
+    });
+
+    return new Pixel(
+        Math.floor(Math.sqrt(rSum / numPixels)),
+        Math.floor(Math.sqrt(gSum / numPixels)),
+        Math.floor(Math.sqrt(bSum / numPixels)),
+    );
 }
