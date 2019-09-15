@@ -105,17 +105,24 @@ export class PPM {
 
         while (frontier.length > 0) {
             const size = frontier.length;
+            // console.log('starting new edge of the frontier: ', size);
 
             for (let i = 0; i < size; i++) {
                 const [x, y] = frontier.shift()!;
-                frontierSet.delete(id(x, y));
                 section.set(id(x, y), [x, y]);
                 count++;
+                // console.log(`considering neighbors of (${x}, ${y})`)
 
                 const evalPixel = (newX: number, newY: number) => {
+                    // console.log(`evaluating (${newX}, ${newY})`);
                     const pixel = this.getPixelByCoord(newX, newY);
+                    // console.log(`section doesn't have: ${!section.has(id(newX, newY))}`);
+                    // console.log(`pixel is target color: ${pixel.equals(targetColor)}`);
+                    // console.log(`frontier set doesn't have: ${!frontierSet.has(id(newX, newY))}`);
                     if (!section.has(id(newX, newY)) && pixel.equals(targetColor) && !frontierSet.has(id(newX, newY))) {
                         frontier.push([newX, newY]);
+                        frontierSet.add(id(newX, newY));
+                        // console.log(`(${newX}, ${newY}) added to frontier`);
                     }
                 };
 
@@ -132,7 +139,6 @@ export class PPM {
                     evalPixel(x + 1, y);
                 }
             }
-            console.log('Pixels evaluated in section so far: ', count);
         }
 
         const ret: [number, number][] = [];

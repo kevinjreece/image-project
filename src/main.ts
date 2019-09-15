@@ -58,10 +58,16 @@ function greyscaleImage(original: PPM): PPM {
     return newImage;
 }
 
-function simplifyImage(original: PPM, spread: number = 1, limit: number = 100): PPM {
+function simplifyImage(original: PPM, spread: number = 1, limit: number = 50): PPM {
     const tracedImage = original.duplicate();
     const w = original.width;
     const h = original.height;
+
+    original.forEachPixel((p, x, y, i) => {
+        if (p.equals(Pixel.black())) {
+            original.setPixelByCoord(x, y, Pixel.white());
+        }
+    });
 
     original.forEachPixel((p, x, y, i) => {
         if (x < spread || x >= w - spread || y < spread || y >= h - spread) {
@@ -90,12 +96,12 @@ function simplifyImage(original: PPM, spread: number = 1, limit: number = 100): 
         if (!p.equals(Pixel.white())) {
             return;
         }
-        console.log('coloring pixel: ', x, ', ', y);
+        // console.log('coloring pixel: ', x, ', ', y);
         const section = coloredImage.getPixelsInSection(x, y);
         section.forEach(([pX, pY]: [number, number]) => {
-            let pixel = original.getPixelByCoord(x, y);
-            pixel = pixel.equals(Pixel.white()) ? new Pixel(1, 1, 1) : pixel;
-            coloredImage.setPixelByCoord(pX, pY, pixel.duplicate());
+            const originalPixel = original.getPixelByCoord(x, y);
+            const coloredPixel = originalPixel.equals(Pixel.white()) ? new Pixel(254, 254, 254) : originalPixel;
+            coloredImage.setPixelByCoord(pX, pY, coloredPixel.duplicate());
         });
     });
 

@@ -54,10 +54,10 @@ describe('PPM', () => {
 
     it('can find all pixels in section', () => {
         const ppm = new PPM(checkeredPPM);
-        const actualTopLeft = ppm.getPixelsInSection(0, 0, Pixel.black());
+        const actualTopLeft = ppm.getPixelsInSection(0, 0, Pixel.white());
         const expectedTopLeft: [number, number][] = [[0, 0], [1, 0], [0, 1], [1, 1]];
         checkSection(expectedTopLeft, actualTopLeft);
-        const actualTopRight = ppm.getPixelsInSection(2, 0, Pixel.white());
+        const actualTopRight = ppm.getPixelsInSection(2, 0, Pixel.black());
         const expectedTopRight: [number, number][] = [[2, 0], [3, 0], [2, 1], [3, 1]];
         checkSection(expectedTopRight, actualTopRight);
         const actualBottomLeft = ppm.getPixelsInSection(0, 2, Pixel.black());
