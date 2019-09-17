@@ -141,8 +141,28 @@ export class PPM {
             }
         }
 
+        let rSum = 0;
+        let gSum = 0;
+        let bSum = 0;
+
         const ret: [number, number][] = [];
-        section.forEach((v, k) => ret.push(v));
+        section.forEach((v, k) => {
+            ret.push(v);
+            const [x, y] = v;
+            const p = this.getPixelByCoord(x, y);
+            rSum += p.r * p.r;
+            gSum += p.g * p.g;
+            bSum += p.b * p.b;
+        });
+
+        const numPixels = ret.length;
+
+        const averagePixel = new Pixel(
+            Math.floor(Math.sqrt(rSum / numPixels)),
+            Math.floor(Math.sqrt(gSum / numPixels)),
+            Math.floor(Math.sqrt(bSum / numPixels)),
+        );
+
         return ret;
     }
 

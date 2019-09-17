@@ -24,6 +24,7 @@ function readFiles(dirname: string, fileType: string, onFileContent: (filename: 
 
 var data: {[id: string]: string} = {};
 readFiles('inputs/', '.ppm', function (filename, content) {
+    console.log(`simplifying file ${filename}`);
     data[filename] = content;
     const ppm = new PPM(content);
 
@@ -99,7 +100,7 @@ function simplifyImage(original: PPM, spread: number = 1, limit: number = 50): P
         // console.log('coloring pixel: ', x, ', ', y);
         const section = coloredImage.getPixelsInSection(x, y);
         const pixels = section.map(([sectionX, sectionY]) => original.getPixelByCoord(sectionX, sectionY));
-        const sectionColor = averageColorOfPixels(pixels);
+        const sectionColor = averageColorOfPixels(pixels, x, y);
         section.forEach(([pX, pY]: [number, number]) => {
             coloredImage.setPixelByCoord(pX, pY, sectionColor == Pixel.white() ? new Pixel(254, 254, 254) : sectionColor);
         });
@@ -108,7 +109,8 @@ function simplifyImage(original: PPM, spread: number = 1, limit: number = 50): P
     return coloredImage;
 }
 
-function averageColorOfPixels(pixels: Pixel[]): Pixel {
+function averageColorOfPixels(pixels: Pixel[], x: number, y: number): Pixel {
+    console.log(`averaging a section for (${x}, ${y})`);
     let rSum = 0;
     let gSum = 0;
     let bSum = 0;
